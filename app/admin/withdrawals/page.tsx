@@ -87,7 +87,7 @@ export default function AdminWithdrawalsPage() {
                   <td className="p-3.5 font-mono font-bold text-white">${wth.requestedAmount.toFixed(2)}</td>
                   <td className="p-3.5 font-mono text-amber-400">${wth.fee.toFixed(2)}</td>
                   <td className="p-3.5 font-mono font-extrabold text-emerald-400">${wth.netPayout.toFixed(2)}</td>
-                  <td className="p-3.5 font-mono text-xs text-silver-400 max-w-[180px] truncate">{wth.payoutDetails}</td>
+                  <td className="p-3.5 font-mono text-xs text-silver-200 font-bold break-all select-all">{wth.payoutMethod}: {wth.payoutDetails}</td>
                   <td className="p-3.5">
                     {wth.status === 'COMPLETED' && (
                       <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md font-bold text-[10px]">

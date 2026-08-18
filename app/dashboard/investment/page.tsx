@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { mockStore } from '@/lib/data/mockStore';
 import { User, Investment } from '@/types';
 import { Wallet, ShieldCheck, ArrowRight, PlusCircle, CheckCircle2, Clock, XCircle, Info } from 'lucide-react';
 import { CONSTANTS, calculateDepositCharge } from '@/lib/services/financialEngine';
 
 export default function MyInvestmentPage() {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [amountInput, setAmountInput] = useState<string>('500');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const refreshData = () => {
     const active = mockStore.getActiveUser();
@@ -46,21 +47,14 @@ export default function MyInvestmentPage() {
   const handleCreateInvestmentRequest = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
-    setSuccessMsg(null);
 
     if (!isValidAmount) {
       setErrorMsg(`Investment amount must be between $${CONSTANTS.MIN_INVESTMENT} and $${CONSTANTS.MAX_INVESTMENT.toLocaleString()}.`);
       return;
     }
 
-    try {
-      mockStore.createDeposit(user.id, numAmount, 'USDT_TRC20', `INV-REQ-${Date.now()}`);
-      setSuccessMsg(`Investment request for $${numAmount.toLocaleString()} submitted successfully! (Pending Admin Deposit Verification)`);
-      setAmountInput('500');
-      refreshData();
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to submit investment request.');
-    }
+    // Automatically navigate user to deposit form with selected upgrade amount
+    router.push(`/dashboard/deposit?amount=${numAmount}&isUpgrade=true`);
   };
 
   return (
@@ -103,11 +97,6 @@ export default function MyInvestmentPage() {
             {errorMsg && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs p-3.5 rounded-xl mb-4">
                 {errorMsg}
-              </div>
-            )}
-            {successMsg && (
-              <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs p-3.5 rounded-xl mb-4">
-                {successMsg}
               </div>
             )}
 

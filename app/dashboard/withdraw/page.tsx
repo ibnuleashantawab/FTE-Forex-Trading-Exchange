@@ -250,10 +250,6 @@ export default function WithdrawPage() {
                 <CheckCircle2 className="w-4 h-4 text-gold-400 shrink-0 mt-0.5" />
                 <span><strong>3% Charge:</strong> Net payout is calculated as requested amount minus 3% withdrawal charge.</span>
               </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-gold-400 shrink-0 mt-0.5" />
-                <span><strong>Lifecycle States:</strong> PENDING $\rightarrow$ REVIEW $\rightarrow$ APPROVED $\rightarrow$ COMPLETED / REJECTED.</span>
-              </li>
             </ul>
           </div>
         </div>
@@ -288,7 +284,7 @@ export default function WithdrawPage() {
                   <td className="p-3.5 font-mono font-bold text-white">${wth.requestedAmount.toFixed(2)}</td>
                   <td className="p-3.5 font-mono text-amber-400">${wth.fee.toFixed(2)}</td>
                   <td className="p-3.5 font-mono font-extrabold text-emerald-400">${wth.netPayout.toFixed(2)}</td>
-                  <td className="p-3.5 font-mono text-xs text-silver-400 max-w-[180px] truncate">
+                  <td className="p-3.5 font-mono text-xs text-silver-200 font-bold break-all select-all">
                     {wth.payoutMethod}: {wth.payoutDetails}
                   </td>
                   <td className="p-3.5">

@@ -1,16 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { mockStore } from '@/lib/data/mockStore';
 import { User, DepositRecord, DepositMethod } from '@/types';
-import { ArrowDownCircle, CheckCircle2, Clock, XCircle, Info, Copy, Upload, ShieldCheck } from 'lucide-react';
+import { ArrowDownCircle, CheckCircle2, Clock, XCircle, Info, Copy, Upload, ShieldCheck, Sparkles } from 'lucide-react';
 import { CONSTANTS, calculateDepositCharge } from '@/lib/services/financialEngine';
 
-export default function DepositPage() {
+function DepositContent() {
+  const searchParams = useSearchParams();
+  const amountParam = searchParams ? searchParams.get('amount') : null;
+  const isUpgradeParam = searchParams ? searchParams.get('isUpgrade') : null;
+
   const [user, setUser] = useState<User | null>(null);
   const [deposits, setDeposits] = useState<DepositRecord[]>([]);
 
-  const [grossInput, setGrossInput] = useState<string>('1000');
+  const [grossInput, setGrossInput] = useState<string>(amountParam || '1000');
   const [method, setMethod] = useState<DepositMethod>('USDT_TRC20');
   const [refNumber, setRefNumber] = useState<string>('');
   const [proofUrl, setProofUrl] = useState<string>('');
@@ -28,7 +33,10 @@ export default function DepositPage() {
 
   useEffect(() => {
     refreshData();
-  }, []);
+    if (amountParam) {
+      setGrossInput(amountParam);
+    }
+  }, [amountParam]);
 
   if (!user) return null;
 
@@ -90,7 +98,7 @@ export default function DepositPage() {
         refNumber,
         proofUrl || 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=600&auto=format&fit=crop&q=60'
       );
-      setSuccessMsg(`Deposit request of $${numGross.toLocaleString()} submitted! Admin verification pending.`);
+      setSuccessMsg(`Investment deposit/upgrade request of $${numGross.toLocaleString()} submitted! Admin verification pending.`);
       setGrossInput('1000');
       setRefNumber('');
       setProofUrl('');
@@ -115,12 +123,21 @@ export default function DepositPage() {
         </div>
       </div>
 
+      {isUpgradeParam && (
+        <div className="bg-gold-500/10 border border-gold-500/30 text-gold-300 p-4 rounded-2xl flex items-center gap-3">
+          <Sparkles className="w-5 h-5 text-gold-400 shrink-0" />
+          <div className="text-xs">
+            <strong className="text-white">Investment Capital Upgrade Request:</strong> Selected upgrade amount: <span className="font-mono font-bold text-gold-400">${numGross.toLocaleString()}</span>. Please select your payment gateway, copy the address, and submit your reference hash below for admin approval.
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Deposit Request Form */}
         <div className="lg:col-span-2 glass-panel rounded-2xl p-6 border border-obsidian-750 flex flex-col justify-between">
           <div>
             <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <ArrowDownCircle className="w-5 h-5 text-gold-400" /> New Deposit Request Form
+              <ArrowDownCircle className="w-5 h-5 text-gold-400" /> New Deposit / Upgrade Request Form
             </h3>
             <p className="text-xs text-silver-400 mb-6">
               Enter gross deposit amount and select your payment method. Charge (3%) will be calculated transparently.
@@ -299,7 +316,7 @@ export default function DepositPage() {
                   <td className="p-3.5 font-mono text-amber-400">${dep.fee.toFixed(2)}</td>
                   <td className="p-3.5 font-mono font-extrabold text-emerald-400">${dep.netAmount.toFixed(2)}</td>
                   <td className="p-3.5 font-mono text-silver-300">{dep.method}</td>
-                  <td className="p-3.5 font-mono text-xs text-silver-400 truncate max-w-[150px]">{dep.referenceNumber}</td>
+                  <td className="p-3.5 font-mono text-xs text-gold-300 font-bold break-all select-all">{dep.referenceNumber}</td>
                   <td className="p-3.5">
                     {dep.status === 'APPROVED' && (
                       <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md font-bold text-[10px]">
@@ -332,5 +349,13 @@ export default function DepositPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DepositPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gold-300 font-bold">Loading Deposit Portal...</div>}>
+      <DepositContent />
+    </Suspense>
   );
 }

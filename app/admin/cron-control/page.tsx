@@ -108,29 +108,79 @@ export default function AdminCronControlPage() {
             <p className="text-xs text-silver-400 mb-4">Latest execution logs and state locking.</p>
 
             {logResults ? (
-              <div className="bg-obsidian-850 p-4 rounded-xl border border-gold-500/30 flex flex-col gap-3 font-mono text-xs">
+              <div className="bg-obsidian-850 p-4 rounded-xl border border-gold-500/30 flex flex-col gap-4 font-mono text-xs">
                 <div className="flex items-center justify-between pb-2 border-b border-obsidian-750">
                   <span className="text-silver-400">Execution Status:</span>
                   <span className="text-emerald-400 font-bold flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" /> SUCCESS
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
+
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-silver-400">Trading Date:</span>
                   <span className="text-white font-bold">{logResults.date}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-silver-400">Investor Profits Credited:</span>
-                  <span className="text-gold-400 font-bold">+{logResults.profitsCredited} Records</span>
+
+                {/* 1. Investor Profits Credited Details */}
+                <div className="flex flex-col gap-1.5 pt-2 border-t border-obsidian-750">
+                  <div className="flex items-center justify-between text-silver-300 font-bold">
+                    <span>1. Investor Profits Credited:</span>
+                    <span className="text-gold-400">+{logResults.profitsCredited} Records</span>
+                  </div>
+                  {logResults.profitDetails && logResults.profitDetails.length > 0 ? (
+                    <div className="flex flex-col gap-1 pl-2 border-l-2 border-gold-500/40 text-[11px] text-silver-300">
+                      {logResults.profitDetails.map((p: any, idx: number) => (
+                        <div key={idx} className="flex justify-between py-0.5">
+                          <span>{p.userName} (${p.eligibleCapital.toLocaleString()} Capital @ 0.60%)</span>
+                          <span className="text-emerald-400 font-bold">+${p.profitAmount.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-silver-500 italic pl-2">No new profits credited (or already credited for {logResults.date}).</p>
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-silver-400">Gen-1 Commissions Paid:</span>
-                  <span className="text-purple-400 font-bold">+{logResults.commissionsPaid} Paid</span>
+
+                {/* 2. Gen-1 Commissions Paid Details */}
+                <div className="flex flex-col gap-1.5 pt-2 border-t border-obsidian-750">
+                  <div className="flex items-center justify-between text-silver-300 font-bold">
+                    <span>2. Gen-1 Commissions Paid:</span>
+                    <span className="text-purple-400">+{logResults.commissionsPaid} Paid</span>
+                  </div>
+                  {logResults.commissionDetails && logResults.commissionDetails.length > 0 ? (
+                    <div className="flex flex-col gap-1 pl-2 border-l-2 border-purple-500/40 text-[11px] text-silver-300">
+                      {logResults.commissionDetails.map((c: any, idx: number) => (
+                        <div key={idx} className="flex justify-between py-0.5">
+                          <span>{c.sponsorName} from {c.sourceMemberName} (${c.sourceProfitAmount.toFixed(2)} Profit @ 40%)</span>
+                          <span className="text-purple-400 font-bold">+${c.commissionAmount.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-silver-500 italic pl-2">No Gen-1 commissions triggered.</p>
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-silver-400">Milestone Rewards Unlocked:</span>
-                  <span className="text-amber-400 font-bold">+{logResults.rewardsUnlocked} Unlocked</span>
+
+                {/* 3. Milestone Rewards Unlocked Details */}
+                <div className="flex flex-col gap-1.5 pt-2 border-t border-obsidian-750">
+                  <div className="flex items-center justify-between text-silver-300 font-bold">
+                    <span>3. Milestone Rewards Unlocked:</span>
+                    <span className="text-amber-400">+{logResults.rewardsUnlocked} Unlocked</span>
+                  </div>
+                  {logResults.rewardDetails && logResults.rewardDetails.length > 0 ? (
+                    <div className="flex flex-col gap-1 pl-2 border-l-2 border-amber-500/40 text-[11px] text-silver-300">
+                      {logResults.rewardDetails.map((r: any, idx: number) => (
+                        <div key={idx} className="flex justify-between py-0.5">
+                          <span>{r.userName} (Milestone #{r.milestoneIndex} @ ${r.threshold.toLocaleString()} Team Volume)</span>
+                          <span className="text-amber-400 font-bold">+${r.rewardAmount.toLocaleString()} Unlocked</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-silver-500 italic pl-2">No milestone rewards unlocked.</p>
+                  )}
                 </div>
+
                 <div className="pt-2 border-t border-obsidian-750 text-[10px] text-silver-500">
                   Logged at: {logResults.timestamp}
                 </div>

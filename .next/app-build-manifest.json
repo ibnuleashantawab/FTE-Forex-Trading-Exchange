@@ -16,65 +16,80 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/page.js"
     ],
-    "/admin/dashboard/page": [
+    "/dashboard/investment/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/dashboard/page.js"
-    ],
-    "/admin/deposits/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/deposits/page.js"
-    ],
-    "/dashboard/withdraw/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/withdraw/page.js"
+      "static/chunks/app/dashboard/investment/page.js"
     ],
     "/dashboard/deposit/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/deposit/page.js"
     ],
-    "/dashboard/transactions/page": [
+    "/dashboard/trading-profit/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/transactions/page.js"
+      "static/chunks/app/dashboard/trading-profit/page.js"
     ],
     "/dashboard/team/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/team/page.js"
     ],
-    "/dashboard/support/page": [
+    "/dashboard/referral/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/support/page.js"
+      "static/chunks/app/dashboard/referral/page.js"
     ],
-    "/admin/support/page": [
+    "/dashboard/generation-bonus/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/support/page.js"
+      "static/chunks/app/dashboard/generation-bonus/page.js"
     ],
-    "/admin/cron-control/page": [
+    "/dashboard/rewards/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/cron-control/page.js"
+      "static/chunks/app/dashboard/rewards/page.js"
     ],
-    "/admin/rewards/page": [
+    "/dashboard/withdraw/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/rewards/page.js"
+      "static/chunks/app/dashboard/withdraw/page.js"
+    ],
+    "/dashboard/transactions/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/transactions/page.js"
+    ],
+    "/admin/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/dashboard/page.js"
+    ],
+    "/admin/users/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/users/page.js"
+    ],
+    "/admin/deposits/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/deposits/page.js"
     ],
     "/admin/withdrawals/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/withdrawals/page.js"
     ],
-    "/admin/users/page": [
+    "/admin/cron-control/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/users/page.js"
+      "static/chunks/app/admin/cron-control/page.js"
+    ],
+    "/admin/support/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/support/page.js"
     ]
   }
 }

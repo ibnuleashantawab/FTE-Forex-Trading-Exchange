@@ -82,7 +82,7 @@ export default function AdminDepositsPage() {
                   <td className="p-3.5 font-mono text-amber-400">${dep.fee.toFixed(2)}</td>
                   <td className="p-3.5 font-mono font-extrabold text-emerald-400">${dep.netAmount.toFixed(2)}</td>
                   <td className="p-3.5 font-mono text-silver-300">{dep.method}</td>
-                  <td className="p-3.5 font-mono text-xs text-silver-400 max-w-[150px] truncate">{dep.referenceNumber}</td>
+                  <td className="p-3.5 font-mono text-xs text-gold-300 font-bold break-all select-all">{dep.referenceNumber}</td>
                   <td className="p-3.5">
                     {dep.status === 'APPROVED' && (
                       <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md font-bold text-[10px]">

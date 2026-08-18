@@ -1,10 +1,12 @@
 {
+  "/dashboard/deposit/page": "app/dashboard/deposit/page.js",
+  "/dashboard/rewards/page": "app/dashboard/rewards/page.js",
+  "/dashboard/transactions/page": "app/dashboard/transactions/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/admin/cron-control/page": "app/admin/cron-control/page.js",
-  "/admin/withdrawals/page": "app/admin/withdrawals/page.js",
-  "/admin/support/page": "app/admin/support/page.js",
-  "/admin/rewards/page": "app/admin/rewards/page.js",
+  "/dashboard/withdraw/page": "app/dashboard/withdraw/page.js",
   "/admin/users/page": "app/admin/users/page.js",
   "/admin/deposits/page": "app/admin/deposits/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/admin/cron-control/page": "app/admin/cron-control/page.js",
+  "/admin/withdrawals/page": "app/admin/withdrawals/page.js",
+  "/admin/support/page": "app/admin/support/page.js"
 }

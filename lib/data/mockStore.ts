@@ -42,7 +42,7 @@ const INITIAL_USERS: User[] = [
     totalInvested: 1500.0,
     totalProfitEarned: 420.0,
     totalCommissionEarned: 260.0,
-    totalRewardsEarned: 10000.0,
+    totalRewardsEarned: 0,
   },
   {
     id: 'ref-1',
@@ -364,18 +364,7 @@ const INITIAL_WITHDRAWALS: WithdrawalRecord[] = [
   },
 ];
 
-const INITIAL_REWARDS: MilestoneReward[] = [
-  {
-    id: 'rwd-701',
-    userId: 'user-1',
-    milestoneIndex: 1,
-    threshold: 50000.0,
-    rewardAmount: 10000.0,
-    status: 'PAID',
-    createdAt: '2026-06-20T10:00:00Z',
-    paidAt: '2026-06-21T09:00:00Z',
-  },
-];
+const INITIAL_REWARDS: MilestoneReward[] = [];
 
 const INITIAL_TICKETS: SupportTicket[] = [
   {
@@ -495,6 +484,16 @@ class StoreManager {
 
       const storedActiveUser = localStorage.getItem('fte_active_user_id');
       if (storedActiveUser) this.activeUserId = storedActiveUser;
+
+      // Sanity Check: Ensure rewards are only present if team volume threshold was actually met, and sync totalRewardsEarned
+      this.users.forEach(u => {
+        const tv = this.getTeamVolume(u.id);
+        this.rewards = this.rewards.filter(r => r.userId !== u.id || r.threshold <= tv.totalTeamVolume);
+        const paidSum = this.rewards
+          .filter(r => r.userId === u.id && r.status === 'PAID')
+          .reduce((sum, r) => sum + r.rewardAmount, 0);
+        u.totalRewardsEarned = paidSum;
+      });
     } catch (e) {
       console.warn('Failed to parse localStorage, using default seed data.', e);
     }
@@ -765,11 +764,22 @@ class StoreManager {
   }
 
   // --- Cron Daily Trading Profit Simulation ---
-  runDailyTradingProfitJob(simulatedDate?: string): { profitsCredited: number; commissionsPaid: number; rewardsUnlocked: number } {
+  runDailyTradingProfitJob(simulatedDate?: string): {
+    profitsCredited: number;
+    commissionsPaid: number;
+    rewardsUnlocked: number;
+    profitDetails: { userName: string; email: string; eligibleCapital: number; profitAmount: number }[];
+    commissionDetails: { sponsorName: string; sourceMemberName: string; sourceProfitAmount: number; commissionAmount: number }[];
+    rewardDetails: { userName: string; milestoneIndex: number; threshold: number; rewardAmount: number }[];
+  } {
     const today = simulatedDate || new Date().toISOString().split('T')[0];
     let profitsCreditedCount = 0;
     let commissionsPaidCount = 0;
     let rewardsUnlockedCount = 0;
+
+    const profitDetails: { userName: string; email: string; eligibleCapital: number; profitAmount: number }[] = [];
+    const commissionDetails: { sponsorName: string; sourceMemberName: string; sourceProfitAmount: number; commissionAmount: number }[] = [];
+    const rewardDetails: { userName: string; milestoneIndex: number; threshold: number; rewardAmount: number }[] = [];
 
     // Check if already processed for today
     const existingForToday = this.tradingProfits.filter(tp => tp.date === today);
@@ -807,6 +817,13 @@ class StoreManager {
       user.totalProfitEarned += dailyProfitAmount;
       profitsCreditedCount++;
 
+      profitDetails.push({
+        userName: user.name,
+        email: user.email,
+        eligibleCapital: totalEligibleCapital,
+        profitAmount: dailyProfitAmount,
+      });
+
       // 2. Check Sponsor Generation-1 Commission
       if (user.sponsorId) {
         const sponsor = this.getUserById(user.sponsorId);
@@ -830,6 +847,13 @@ class StoreManager {
             sponsor.profitBalance += commissionAmount;
             sponsor.totalCommissionEarned += commissionAmount;
             commissionsPaidCount++;
+
+            commissionDetails.push({
+              sponsorName: sponsor.name,
+              sourceMemberName: user.name,
+              sourceProfitAmount: dailyProfitAmount,
+              commissionAmount,
+            });
           }
         }
       }
@@ -837,8 +861,33 @@ class StoreManager {
 
     // Re-evaluate rewards across all users
     this.users.forEach(user => {
-      const unlocked = this.evaluateTeamMilestones(user.id);
-      rewardsUnlockedCount += unlocked;
+      const teamVolume = this.getTeamVolume(user.id);
+      const userRewards = this.getRewards(user.id);
+
+      for (let index = 1; index <= teamVolume.completedMilestones; index++) {
+        const existing = userRewards.find(r => r.milestoneIndex === index);
+        if (!existing) {
+          const reward: MilestoneReward = {
+            id: `rwd-${Date.now()}-${index}`,
+            userId: user.id,
+            milestoneIndex: index,
+            threshold: index * CONSTANTS.REWARD_MILESTONE_STEP,
+            rewardAmount: CONSTANTS.REWARD_MILESTONE_AMOUNT,
+            status: 'UNLOCKED',
+            createdAt: new Date().toISOString(),
+            paidAt: null,
+          };
+          this.rewards.unshift(reward);
+          rewardsUnlockedCount++;
+
+          rewardDetails.push({
+            userName: user.name,
+            milestoneIndex: index,
+            threshold: index * CONSTANTS.REWARD_MILESTONE_STEP,
+            rewardAmount: CONSTANTS.REWARD_MILESTONE_AMOUNT,
+          });
+        }
+      }
     });
 
     this.addAuditLog('admin-1', 'RUN_DAILY_TRADING_PROFIT_JOB', 'TradingProfit', today, null, {
@@ -849,7 +898,14 @@ class StoreManager {
     });
 
     this.saveToStorage();
-    return { profitsCredited: profitsCreditedCount, commissionsPaid: commissionsPaidCount, rewardsUnlocked: rewardsUnlockedCount };
+    return {
+      profitsCredited: profitsCreditedCount,
+      commissionsPaid: commissionsPaidCount,
+      rewardsUnlocked: rewardsUnlockedCount,
+      profitDetails,
+      commissionDetails,
+      rewardDetails,
+    };
   }
 
   // --- Level 1 & Reward Helpers ---
